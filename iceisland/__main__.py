@@ -4,7 +4,7 @@ from dolfin import (
 )
 from dolfin.cpp.function import near
 
-from ufl.objects import dx
+from ufl.objects import dx, ds
 from ufl.operators import dot, inner, nabla_grad, nabla_div, sym, tr, sqrt
 
 from iceisland import settings, config
@@ -27,9 +27,10 @@ def solve_elasticity(mesh: Mesh) -> Function:
     v = TestFunction(V)
 
     f = Expression(('0', '0', '-rho*g'), rho=_c.rho, g=_c.g, degree=3)
+    T = Constant((0, 0, 0))
 
     a = inner(sigma(u), sym(nabla_grad(v))) * dx
-    L = dot(f, v) * dx
+    L = dot(f, v) * dx + dot(T, v) * ds
 
     u = Function(V)
     solve(a == L, u, bc)
