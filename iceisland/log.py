@@ -1,10 +1,10 @@
 import logging
 
-log = logging.getLogger('kevlar')
+log = logging.getLogger('ice_island')
 
 
 def _init_logger():
-    file = logging.FileHandler('kevlar.log')
+    file = logging.FileHandler('ice_island.log')
     file.setLevel(logging.INFO)
 
     console = logging.StreamHandler()

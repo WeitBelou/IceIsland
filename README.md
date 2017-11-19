@@ -1,4 +1,4 @@
-## Kevlar
+## Ice Island
 
 #### Установка FEniCS (требует docker)
 ```bash

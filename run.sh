@@ -7,4 +7,4 @@ docker run --rm \
     --env HOST_GID=$(id -g) \
     --env PYTHONPATH=/home/fenics/shared \
     quay.io/fenicsproject/stable \
-    "python3 -m kevlar"
+    "python3 -m iceisland"
