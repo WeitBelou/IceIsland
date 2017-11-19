@@ -34,12 +34,25 @@ class Layer:
 
 
 class Base:
-    def __init__(self, layers: List[Layer]):
+    def __init__(self, g: float, size: float, layers: List[Layer]):
+        self._g = g
+        self._size = size
         self._layers = layers
 
     @property
     def layers(self) -> List[Layer]:
         return self._layers
 
+    @property
+    def size(self):
+        return self._size
+
+    @property
+    def g(self):
+        return self._g
+
     def __repr__(self) -> str:
-        return '<Base layers={}>'.format(self.layers)
+        return '<Base g={g} size={size} layers={layers}>'.format(
+            g=self.g, size=self.size,
+            layers=self.layers
+        )

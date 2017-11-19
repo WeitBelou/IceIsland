@@ -1,5 +1,9 @@
 from iceisland.config import Layer
-from iceisland.units import METER, GRAM, CENTIMETER, GPA, KILOMETER
+from iceisland.units import METER, GRAM, CENTIMETER, GPA, KILOMETER, SECOND
+
+g = 9.8 * METER / SECOND ** 2
+
+size = 1 * KILOMETER
 
 layers = [
     # Bottom sediments

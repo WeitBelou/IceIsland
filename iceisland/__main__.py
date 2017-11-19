@@ -5,7 +5,7 @@ from iceisland.log import log
 
 
 def main():
-    conf = config.Base(layers=settings.layers)
+    conf = config.Base(g=settings.g, size=settings.size, layers=settings.layers)
     log.info('Config: %s', conf)
 
     try:
