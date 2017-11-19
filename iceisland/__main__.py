@@ -1,12 +1,10 @@
-from typing import List
-
 from dolfin import (
-    VectorFunctionSpace, DirichletBC, TrialFunction, TestFunction, Identity, solve, Constant, Function,
-    Expression
+    VectorFunctionSpace, DirichletBC, TrialFunction, TestFunction, Identity, solve, Constant, Function, Expression
 )
 from dolfin.cpp.function import near
 from dolfin.cpp.io import File
-from dolfin.cpp.mesh import Point, Mesh, BoxMesh
+
+from ufl.objects import dx
 from ufl.operators import dot, inner, nabla_grad, nabla_div, sym
 
 from iceisland import settings, config
@@ -29,12 +27,12 @@ def main():
     log.info('Mesh written.')
 
     V = VectorFunctionSpace(mesh, 'P', 1)
-    bc = DirichletBC(V, Constant((0, 0, 0), lambda x, on_boundary: on_boundary and near(x[2], 0)))
+    bc = DirichletBC(V, Constant((0, 0, 0)), lambda x, on_boundary: on_boundary and near(x[2], 0))
 
     u = TrialFunction(V)
     v = TestFunction(V)
 
-    f = Expression('{0, 0, -rho*g}', rho=c.rho, g=c.g)
+    f = Expression(('0', '0', '-rho*g'), rho=c.rho, g=c.g, degree=3)
 
     a = inner(c.lambda_ * nabla_div(u) * Identity(3) + 2 * c.mu * sym(nabla_grad(u)), sym(nabla_grad(v))) * dx
     L = dot(f, v) * dx

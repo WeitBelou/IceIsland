@@ -64,10 +64,12 @@ class Base:
 
     @property
     def lambda_(self) -> Expression:
+        layers = self.layers
+
         class Lambda(Expression):
             def eval(self, value, x):
                 h = 0
-                for layer in self.layers:
+                for layer in layers:
                     h += layer.h
                     if x[2] <= h:
                         value[0] = layer.lambda_
@@ -77,11 +79,12 @@ class Base:
 
     @property
     def mu(self) -> Expression:
+        layers = self.layers
 
         class Mu(Expression):
             def eval(self, value, x):
                 h = 0
-                for layer in self.layers:
+                for layer in layers:
                     h += layer.h
                     if x[2] <= h:
                         value[0] = layer.mu
@@ -91,11 +94,12 @@ class Base:
 
     @property
     def rho(self):
+        layers = self.layers
 
         class Rho(Expression):
             def eval(self, value, x):
                 h = 0
-                for layer in self.layers:
+                for layer in layers:
                     h += layer.h
                     if x[2] <= h:
                         value[0] = layer.rho
