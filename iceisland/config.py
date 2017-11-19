@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Mesh:
     def __init__(self, radius: float):
         self._radius = radius
@@ -35,53 +38,45 @@ class Material:
         )
 
 
+class Layer:
+    """"""
+
+    def __init__(self, h: float, rho: float, young_modulus: float, shear_modulus: float):
+        self._h = h
+        self._rho = rho
+        self._young_modulus = young_modulus
+        self._shear_modulus = shear_modulus
+
+    @property
+    def h(self):
+        return self._h
+
+    @property
+    def rho(self):
+        return self._rho
+
+    @property
+    def young_modulus(self):
+        return self._young_modulus
+
+    @property
+    def shear_modulus(self):
+        return self._shear_modulus
+
+    def __repr__(self):
+        return '<Layer h={h} rho={rho} young_modulus={young_modulus} shear_modulus={shear_modulus}>'.format(
+            h=self.h, rho=self.rho,
+            young_modulus=self.young_modulus, shear_modulus=self.shear_modulus,
+        )
+
+
 class Base:
-    def __init__(self, mesh: Mesh, material: Material):
-        self._mesh = mesh
-        self._material = material
+    def __init__(self, layers: List[Layer]):
+        self._layers = layers
 
     @property
-    def mesh(self) -> Mesh:
-        return self._mesh
+    def layers(self) -> List[Layer]:
+        return self._layers
 
-    @property
-    def material(self) -> Material:
-        return self._material
-
-    def __str__(self) -> str:
-        return '<Base mesh={mesh} material={material}>'.format(
-            mesh=self.mesh, material=self.material
-        )
-
-
-class ConfigException(Exception):
-    pass
-
-
-def from_file(path: str) -> Base:
-    from configparser import ConfigParser, NoOptionError
-
-    parser = ConfigParser()
-
-    files_read = parser.read(path)
-    if len(files_read) != 1 or files_read[0] != path:
-        raise ConfigException()
-
-    default_section = parser.default_section
-
-    try:
-        mesh = Mesh(radius=parser.getfloat(default_section, 'mesh.radius'))
-    except NoOptionError as e:
-        raise ConfigException(e)
-
-    try:
-        material = Material(
-            density=parser.getfloat(default_section, 'material.density'),
-            young_modulus=parser.getfloat(default_section, 'material.young_modulus'),
-            shear_modulus=parser.getfloat(default_section, 'material.shear_modulus'),
-        )
-    except NoOptionError as e:
-        raise ConfigException(e)
-
-    c = Base(mesh=mesh, material=material)
-    return c
+    def __repr__(self) -> str:
+        return '<Base layers={}>'.format(self.layers)

@@ -1,0 +1,25 @@
+# Multipliers
+MILLI = 1e-3
+CENTI = 1e-2
+KILO = 1e+3
+MEGA = 1e+6
+GIGA = 1e+9
+
+# Length
+METER = 1.0
+CENTIMETER = CENTI * METER
+KILOMETER = KILO * METER
+
+# Mass
+KILOGRAM = 1.0
+GRAM = MILLI * KILOGRAM
+
+# Time
+SECOND = 1.0
+
+# Force
+NEWTON = KILOGRAM * METER / SECOND ** 2
+
+# Pressure
+PA = KILOGRAM / METER * SECOND ** 2
+GPA = GIGA * PA
