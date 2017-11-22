@@ -12,7 +12,7 @@ from iceisland.io import write
 from iceisland.log import log
 from iceisland.meshes import create_from_layers
 
-_c = config.Base(g=settings.g, size=settings.size, layers=settings.layers)
+_c = config.Base(g=settings.g, size=settings.size, resolution=settings.resolution, layers=settings.layers)
 
 
 def sigma(u):
@@ -47,7 +47,7 @@ def compute_stress(mesh: Mesh, displacement: Function) -> Function:
 def main():
     log.info('Config: %s', _c)
 
-    mesh = create_from_layers(size=_c.size, layers=_c.layers)
+    mesh = create_from_layers(size=_c.size, resolution=_c.resolution, layers=_c.layers)
     write('mesh', mesh)
 
     u = solve_elasticity(mesh)

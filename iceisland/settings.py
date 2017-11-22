@@ -1,9 +1,11 @@
-from iceisland.config import Layer
+from iceisland.config import Layer, Resolution
 from iceisland.units import METER, GRAM, CENTIMETER, GPA, KILOMETER, SECOND
 
 g = 9.8 * METER / SECOND ** 2
 
-size = 1 * KILOMETER
+size = 10 * KILOMETER
+
+resolution = Resolution(n_x=20, n_y=20, n_z=50)
 
 layers = [
     # Crystal foundation

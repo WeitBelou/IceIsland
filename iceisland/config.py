@@ -44,9 +44,29 @@ class Layer:
         )
 
 
+class Resolution:
+    def __init__(self, n_x: int, n_y: int, n_z: int):
+        self._n_z = n_z
+        self._n_y = n_y
+        self._n_x = n_x
+
+    @property
+    def n_x(self) -> int:
+        return self._n_x
+
+    @property
+    def n_y(self) -> int:
+        return self._n_y
+
+    @property
+    def n_z(self) -> int:
+        return self._n_z
+
+
 class Base:
-    def __init__(self, g: float, size: float, layers: List[Layer]):
+    def __init__(self, g: float, size: float, resolution: Resolution, layers: List[Layer]):
         self._g = g
+        self._resolution = resolution
         self._size = size
         self._layers = layers
 
@@ -57,6 +77,10 @@ class Base:
     @property
     def size(self):
         return self._size
+
+    @property
+    def resolution(self) -> Resolution:
+        return self._resolution
 
     @property
     def g(self):
@@ -108,7 +132,6 @@ class Base:
         return Rho(degree=0)
 
     def __repr__(self) -> str:
-        return '<Base g={g} size={size} layers={layers}>'.format(
-            g=self.g, size=self.size,
-            layers=self.layers
+        return '<Base g={g} size={size} resolution={resolution} layers={layers}>'.format(
+            g=self.g, size=self.size, layers=self.layers, resolution=self.resolution
         )
