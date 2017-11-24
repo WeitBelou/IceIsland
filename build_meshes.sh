@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BASENAME=geometry
+BASENAME=mesh
 
 cd meshes
 
