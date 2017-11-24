@@ -7,3 +7,7 @@ __pycache__/
 
 # Logs
 *.log
+
+# Generated meshes
+/meshes/*/*.xml
+/meshes/*/*.msh
