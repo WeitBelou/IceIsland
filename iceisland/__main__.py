@@ -47,7 +47,7 @@ def main():
     log.info('Config: %s', _c)
 
     mesh = _c.mesh
-    write('mesh_dir', mesh)
+    write('mesh', mesh)
 
     u = solve_elasticity(mesh)
     write('displacement', u)

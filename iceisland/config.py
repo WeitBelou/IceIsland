@@ -1,5 +1,5 @@
-import os
 import operator as op
+import os
 from typing import Dict, Callable
 
 from dolfin import Expression, Mesh
@@ -46,8 +46,8 @@ class Base:
         self._materials = materials
 
         self._mesh = Mesh(os.path.join(mesh_dir, 'mesh.xml'))
-        self._subdomains = MeshFunctionSizet(os.path.join(mesh_dir, 'mesh_physical_region.xml'))
-        self._boundaries = MeshFunctionSizet(os.path.join(mesh_dir, 'mesh_facet_region.xml'))
+        self._subdomains = MeshFunctionSizet(self.mesh, os.path.join(mesh_dir, 'mesh_physical_region.xml'))
+        self._boundaries = MeshFunctionSizet(self.mesh, os.path.join(mesh_dir, 'mesh_facet_region.xml'))
 
     @property
     def g(self):
@@ -67,15 +67,15 @@ class Base:
 
     @property
     def lambda_(self) -> Expression:
-        return MaterialGetter(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('lambda_'))
+        return MaterialGetter.create(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('lambda_'))
 
     @property
     def mu(self) -> Expression:
-        return MaterialGetter(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('mu'))
+        return MaterialGetter.create(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('mu'))
 
     @property
     def rho(self):
-        return MaterialGetter(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('rho'))
+        return MaterialGetter.create(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('rho'))
 
     def __repr__(self) -> str:
         return '<Base g={g} mesh_dir={mesh_dir} materials={materials}>'.format(
@@ -88,12 +88,15 @@ class UnknownDomainException(Exception):
 
 
 class MaterialGetter(Expression):
-    def __init__(self, materials: Dict[int, Material], subdomains: MeshFunctionSizet, f: Callable[[Material], float]):
-        self._f = f
-        self._subdomains = subdomains
-        self._materials = materials
+    @staticmethod
+    def create(materials: Dict[int, Material], subdomains: MeshFunctionSizet, f: Callable[[Material], float]):
+        a = MaterialGetter(degree=0)
 
-        super(MaterialGetter, self).__init__(degree=0)
+        a._f = f
+        a._subdomains = subdomains
+        a._materials = materials
+
+        return a
 
     def eval_cell(self, values, x, cell):
         material = self._materials.get(self._subdomains[cell.index])
