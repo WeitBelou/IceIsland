@@ -1,20 +1,15 @@
-from typing import List
+import os
+from typing import Dict
 
-from dolfin import Expression
+from dolfin import Expression, Mesh
+from dolfin.cpp.mesh import MeshFunction
 
 
-class Layer:
-    """"""
-
-    def __init__(self, h: float, rho: float, young_modulus: float, shear_modulus: float):
-        self._h = h
+class Material:
+    def __init__(self, rho: float, young_modulus: float, shear_modulus: float):
         self._rho = rho
         self._young_modulus = young_modulus
         self._shear_modulus = shear_modulus
-
-    @property
-    def h(self) -> float:
-        return self._h
 
     @property
     def rho(self) -> float:
@@ -38,100 +33,66 @@ class Layer:
         return self.shear_modulus
 
     def __repr__(self):
-        return '<Layer h={h} rho={rho} young_modulus={young_modulus} shear_modulus={shear_modulus}>'.format(
-            h=self.h, rho=self.rho,
-            young_modulus=self.young_modulus, shear_modulus=self.shear_modulus,
+        return '<Material rho={rho} young_modulus={young_modulus} shear_modulus={shear_modulus}>'.format(
+            rho=self.rho, young_modulus=self.young_modulus, shear_modulus=self.shear_modulus,
         )
 
 
-class Resolution:
-    def __init__(self, n_x: int, n_y: int, n_z: int):
-        self._n_z = n_z
-        self._n_y = n_y
-        self._n_x = n_x
-
-    @property
-    def n_x(self) -> int:
-        return self._n_x
-
-    @property
-    def n_y(self) -> int:
-        return self._n_y
-
-    @property
-    def n_z(self) -> int:
-        return self._n_z
-
-
 class Base:
-    def __init__(self, g: float, size: float, resolution: Resolution, layers: List[Layer]):
+    def __init__(self, g: float, mesh_dir: str, materials: Dict[int, Material]):
         self._g = g
-        self._resolution = resolution
-        self._size = size
-        self._layers = layers
+        self._mesh_dir = mesh_dir
+        self._materials = materials
 
-    @property
-    def layers(self) -> List[Layer]:
-        return self._layers
-
-    @property
-    def size(self):
-        return self._size
-
-    @property
-    def resolution(self) -> Resolution:
-        return self._resolution
+        self._mesh = Mesh(os.path.join(mesh_dir, 'mesh.xml'))
+        self._subdomains = MeshFunction(os.path.join(mesh_dir, 'mesh_physical_region.xml'))
+        self._boundaries = MeshFunction(os.path.join(mesh_dir, 'mesh_facet_region.xml'))
 
     @property
     def g(self):
         return self._g
 
     @property
-    def lambda_(self) -> Expression:
-        layers = self.layers
+    def mesh_dir(self) -> str:
+        return self._mesh_dir
 
+    @property
+    def mesh(self) -> Mesh:
+        return self._mesh
+
+    @property
+    def subdomains(self) -> MeshFunction:
+        return self._subdomains
+
+    @property
+    def materials(self) -> Dict[int, Material]:
+        return self._materials
+
+    @property
+    def lambda_(self) -> Expression:
         class Lambda(Expression):
             def eval(self, value, x):
-                h = 0
-                for layer in layers:
-                    h += layer.h
-                    if x[2] <= h:
-                        value[0] = layer.lambda_
-                        return
+                value[0] = 1.0
 
         return Lambda(degree=0)
 
     @property
     def mu(self) -> Expression:
-        layers = self.layers
-
         class Mu(Expression):
             def eval(self, value, x):
-                h = 0
-                for layer in layers:
-                    h += layer.h
-                    if x[2] <= h:
-                        value[0] = layer.mu
-                        return
+                value[0] = 1.0
 
         return Mu(degree=0)
 
     @property
     def rho(self):
-        layers = self.layers
-
         class Rho(Expression):
             def eval(self, value, x):
-                h = 0
-                for layer in layers:
-                    h += layer.h
-                    if x[2] <= h:
-                        value[0] = layer.rho
-                        return
+                value[0] = 1.0
 
         return Rho(degree=0)
 
     def __repr__(self) -> str:
-        return '<Base g={g} size={size} resolution={resolution} layers={layers}>'.format(
-            g=self.g, size=self.size, layers=self.layers, resolution=self.resolution
+        return '<Base g={g} mesh_dir={mesh_dir} materials={materials}>'.format(
+            g=self.g, mesh_dir=self.mesh_dir, materials=self.materials
         )

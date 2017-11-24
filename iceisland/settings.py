@@ -1,22 +1,22 @@
-from iceisland.config import Layer, Resolution
-from iceisland.units import METER, GRAM, CENTIMETER, GPA, KILOMETER, SECOND
+import os
+
+from iceisland.config import Material
+from iceisland.units import METER, GRAM, CENTIMETER, GPA, SECOND
 
 g = 9.8 * METER / SECOND ** 2
 
-size = 10 * KILOMETER
+_MESHES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'meshes')
 
-resolution = Resolution(n_x=20, n_y=20, n_z=50)
+mesh_dir = os.path.join(_MESHES_DIR, 'simple_layers')
 
-layers = [
-    # Crystal foundation
-    Layer(h=1.0 * KILOMETER, rho=2.5 * GRAM / CENTIMETER ** 3, young_modulus=37.0 * GPA, shear_modulus=15.6 * GPA),
+BOTTOM_SEDIMENTS = 1
+FIRST_DENSE_LAYER = 2
+SECOND_DENSE_LAYER = 3
+CRYSTAL_FOUNDATION = 4
 
-    # SECOND dense layer
-    Layer(h=400 * METER, rho=2.5 * GRAM / CENTIMETER ** 3, young_modulus=12.0 * GPA, shear_modulus=4.2 * GPA),
-
-    # First dense layer
-    Layer(h=300 * METER, rho=2.1 * GRAM / CENTIMETER ** 3, young_modulus=5.9 * GPA, shear_modulus=2.1 * GPA),
-
-    # Bottom sediments
-    Layer(h=50 * METER, rho=1.5 * GRAM / CENTIMETER ** 3, young_modulus=0.016 * GPA, shear_modulus=0.0054 * GPA),
-]
+domains = {
+    BOTTOM_SEDIMENTS: Material(rho=1.5 * GRAM / CENTIMETER ** 3, young_modulus=0.016 * GPA, shear_modulus=0.0054 * GPA),
+    FIRST_DENSE_LAYER: Material(rho=2.1 * GRAM / CENTIMETER ** 3, young_modulus=5.9 * GPA, shear_modulus=2.1 * GPA),
+    SECOND_DENSE_LAYER: Material(rho=2.5 * GRAM / CENTIMETER ** 3, young_modulus=12.0 * GPA, shear_modulus=4.2 * GPA),
+    CRYSTAL_FOUNDATION: Material(rho=2.5 * GRAM / CENTIMETER ** 3, young_modulus=37.0 * GPA, shear_modulus=15.6 * GPA),
+}

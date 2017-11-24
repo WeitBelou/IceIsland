@@ -10,9 +10,8 @@ from ufl.operators import dot, inner, nabla_grad, nabla_div, sym, tr, sqrt
 from iceisland import settings, config
 from iceisland.io import write
 from iceisland.log import log
-from iceisland.meshes import create_from_layers
 
-_c = config.Base(g=settings.g, size=settings.size, resolution=settings.resolution, layers=settings.layers)
+_c = config.Base(g=settings.g, mesh_dir=settings.mesh_dir, materials=settings.domains)
 
 
 def sigma(u):
@@ -47,8 +46,8 @@ def compute_stress(mesh: Mesh, displacement: Function) -> Function:
 def main():
     log.info('Config: %s', _c)
 
-    mesh = create_from_layers(size=_c.size, resolution=_c.resolution, layers=_c.layers)
-    write('mesh', mesh)
+    mesh = _c.mesh
+    write('mesh_dir', mesh)
 
     u = solve_elasticity(mesh)
     write('displacement', u)
