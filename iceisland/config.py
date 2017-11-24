@@ -1,8 +1,9 @@
 import os
-from typing import Dict
+import operator as op
+from typing import Dict, Callable
 
 from dolfin import Expression, Mesh
-from dolfin.cpp.mesh import MeshFunction
+from dolfin.cpp.mesh import MeshFunctionSizet
 
 
 class Material:
@@ -45,8 +46,8 @@ class Base:
         self._materials = materials
 
         self._mesh = Mesh(os.path.join(mesh_dir, 'mesh.xml'))
-        self._subdomains = MeshFunction(os.path.join(mesh_dir, 'mesh_physical_region.xml'))
-        self._boundaries = MeshFunction(os.path.join(mesh_dir, 'mesh_facet_region.xml'))
+        self._subdomains = MeshFunctionSizet(os.path.join(mesh_dir, 'mesh_physical_region.xml'))
+        self._boundaries = MeshFunctionSizet(os.path.join(mesh_dir, 'mesh_facet_region.xml'))
 
     @property
     def g(self):
@@ -61,38 +62,42 @@ class Base:
         return self._mesh
 
     @property
-    def subdomains(self) -> MeshFunction:
-        return self._subdomains
-
-    @property
     def materials(self) -> Dict[int, Material]:
         return self._materials
 
     @property
     def lambda_(self) -> Expression:
-        class Lambda(Expression):
-            def eval(self, value, x):
-                value[0] = 1.0
-
-        return Lambda(degree=0)
+        return MaterialGetter(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('lambda_'))
 
     @property
     def mu(self) -> Expression:
-        class Mu(Expression):
-            def eval(self, value, x):
-                value[0] = 1.0
-
-        return Mu(degree=0)
+        return MaterialGetter(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('mu'))
 
     @property
     def rho(self):
-        class Rho(Expression):
-            def eval(self, value, x):
-                value[0] = 1.0
-
-        return Rho(degree=0)
+        return MaterialGetter(materials=self.materials, subdomains=self._subdomains, f=op.attrgetter('rho'))
 
     def __repr__(self) -> str:
         return '<Base g={g} mesh_dir={mesh_dir} materials={materials}>'.format(
             g=self.g, mesh_dir=self.mesh_dir, materials=self.materials
         )
+
+
+class UnknownDomainException(Exception):
+    pass
+
+
+class MaterialGetter(Expression):
+    def __init__(self, materials: Dict[int, Material], subdomains: MeshFunctionSizet, f: Callable[[Material], float]):
+        self._f = f
+        self._subdomains = subdomains
+        self._materials = materials
+
+        super(MaterialGetter, self).__init__(degree=0)
+
+    def eval_cell(self, values, x, cell):
+        material = self._materials.get(self._subdomains[cell.index])
+        if material:
+            values[0] = self._f(material)
+        else:
+            raise UnknownDomainException()
