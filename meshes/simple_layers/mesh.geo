@@ -10,7 +10,7 @@ BOTTOM_SURFACE = 1;
 METER = 1;
 KILOMETER = 1000 * METER;
 
-size = 10 * KILOMETER;
+size = 4 * KILOMETER;
 a = size / 2;
 
 // Bottom
@@ -64,3 +64,37 @@ sediments_top = out[0];
 Physical Volume(BOTTOM_SEDIMENTS) = {out[1]};
 Delete out;
 
+// Mesh options
+
+Field[1] = MathEval;
+Field[1].F = "25.0";
+
+Field[2] = Restrict;
+Field[2].IField = 1;
+Field[2].FacesList = {sediments_top, dense_1_top};
+
+Field[3] = MathEval;
+Field[3].F = "50.0";
+
+Field[4] = Restrict;
+Field[4].IField = 3;
+Field[4].FacesList = {dense_2_top};
+
+Field[5] = MathEval;
+Field[5].F = "50.0";
+
+Field[6] = Restrict;
+Field[6].IField = 5;
+Field[6].FacesList = {crystal_top};
+
+Field[7] = MathEval;
+Field[7].F = "100.0";
+
+Field[8] = Restrict;
+Field[8].IField = 7;
+Field[8].RegionsList = {BOTTOM_SURFACE};
+
+Field[10] = Min;
+Field[10].FieldsList = {2, 4, 6, 8};
+
+Background Field = 10;
