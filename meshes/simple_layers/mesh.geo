@@ -14,15 +14,16 @@ size = 4 * KILOMETER;
 a = size / 2;
 
 // Bottom
-Point(1) = {-a, -a, 0};
-Point(2) = {a, -a, 0};
-Point(3) = {a, a, 0};
-Point(4) = {-a, a, 0};
+Point(1) = {0, 0, 0};
+Point(2) = {-a, -a, 0};
+Point(3) = {a, -a, 0};
+Point(4) = {a, a, 0};
+Point(5) = {-a, a, 0};
 
-Line(1) = {1, 2};
-Line(2) = {2, 3};
-Line(3) = {3, 4};
-Line(4) = {4, 1};
+Circle(1) = {2, 1, 3};
+Circle(2) = {3, 1, 4};
+Circle(3) = {4, 1, 5};
+Circle(4) = {5, 1, 2};
 
 Line Loop(1) = {1, 2, 3, 4};
 Plane Surface(1) = {1};
